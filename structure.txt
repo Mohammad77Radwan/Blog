@@ -1,0 +1,22 @@
+/blog
+│── /config
+│    ├── database.php
+│── /models
+│    ├── User.php
+│    ├── Post.php
+│    ├── Comment.php
+│── /controllers
+│    ├── UserController.php
+│    ├── PostController.php
+│    ├── CommentController.php
+│── /views
+│    ├── index.php
+│    ├── post.php
+│    ├── create_post.php
+│    ├── login.php
+│    ├── register.php
+│── /public
+│    ├── css/
+│    ├── js/
+│── .htaccess
+│── index.php
