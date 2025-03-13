@@ -1,18 +1,13 @@
 <?php
 session_start();
-require_once "config/database.php";  // Include the database configuration
-require_once "models/Post.php";  // Include the Post model to fix the error
+require_once "config/database.php";
 
-// Establish a database connection
 $db = (new Database())->getConnection();
-
-// Create a Post object
-$post = new Post($db);
-
-// Get all posts from the database
-$posts = $post->getAllPosts();
+$query = "SELECT posts.*, users.username FROM posts JOIN users ON posts.user_id = users.id ORDER BY posts.created_at DESC";
+$stmt = $db->prepare($query);
+$stmt->execute();
+$posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -20,29 +15,58 @@ $posts = $post->getAllPosts();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blog</title>
     <link rel="stylesheet" href="public/css/styles.css">
-    <script src="public/js/scripts.js" defer></script>
 </head>
 <body>
     <h1>Bienvenue sur le Blog</h1>
-
-    <?php if (isset($_SESSION["user_id"])): ?>
+    <?php if (!isset($_SESSION["user_id"])): ?>
         <p>Connecté en tant que <strong><?= htmlspecialchars($_SESSION["username"]) ?></strong></p>
         <a href="views/create_post.php">Créer un article</a>
         <a href="views/logout.php" class="logout-btn">Se déconnecter</a>
-
-
+        
     <?php else: ?>
         <a href="views/register.php">S'inscrire</a>
         <a href="views/login.php">Se connecter</a>
     <?php endif; ?>
 
     <h2>Articles</h2>
-
     <?php foreach ($posts as $post): ?>
         <div>
             <h3><a href="views/post.php?id=<?= $post['id'] ?>"><?= htmlspecialchars($post['title']) ?></a></h3>
             <p>Par <strong><?= htmlspecialchars($post['username']) ?></strong> le <?= $post['created_at'] ?></p>
         </div>
     <?php endforeach; ?>
+
+
 </body>
 </html>
+
+
+
+
+
+
+
+<?php
+session_start();
+
+// Prevent caching of the page
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Pragma: no-cache");
+header("Expires: 0");
+
+// Unset all session variables
+session_unset();
+
+// Destroy the session
+session_destroy();
+
+// Ensure no session data is left behind for the current page
+session_regenerate_id(true);
+
+// Redirect to the homepage (index.php)
+header("Location: index.php");
+exit;
+?>
+
+
+

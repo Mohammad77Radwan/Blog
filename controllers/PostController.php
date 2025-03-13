@@ -1,27 +1,23 @@
 <?php
 session_start();
-require_once "../config/database.php";
+require_once "config/database.php";
+require_once "models/Post.php";
 
 $db = (new Database())->getConnection();
+$post = new Post($db);
 
-if (isset($_POST["delete_post"]) && isset($_SESSION["user_id"])) {
-    $post_id = $_POST["post_id"];
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['create_post'])) {
+    if (isset($_SESSION['user_id'])) {
+        $post->user_id = $_SESSION['user_id'];
+        $post->title = $_POST['title'];
+        $post->content = $_POST['content'];
 
-    // Vérifier que l'utilisateur est bien l'auteur
-    $query = "SELECT user_id FROM posts WHERE id = :post_id";
-    $stmt = $db->prepare($query);
-    $stmt->bindParam(":post_id", $post_id);
-    $stmt->execute();
-    $post = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if ($post && $_SESSION["user_id"] == $post["user_id"]) {
-        // Supprimer l'article et ses commentaires
-        $db->prepare("DELETE FROM comments WHERE post_id = :post_id")->execute([":post_id" => $post_id]);
-        $db->prepare("DELETE FROM posts WHERE id = :post_id")->execute([":post_id" => $post_id]);
-
-        header("Location: ../views/index.php");
-        exit;
+        if ($post->create()) {
+            header("Location: ../views/index.php");
+            exit;
+        } else {
+            echo "Erreur lors de la création de l'article.";
+        }
     }
 }
 ?>
-

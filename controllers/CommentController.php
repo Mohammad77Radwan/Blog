@@ -1,26 +1,23 @@
 <?php
 session_start();
-require_once "../config/database.php";
-
-if (!isset($_SESSION["user_id"]) || !isset($_POST["add_comment"])) {
-    header("Location: ../views/index.php");
-    exit;
-}
+require_once "config/database.php";
+require_once "models/Comment.php";
 
 $db = (new Database())->getConnection();
-$user_id = $_SESSION["user_id"];
-$post_id = $_POST["post_id"];
-$content = $_POST["content"];
+$comment = new Comment($db);
 
-$query = "INSERT INTO comments (post_id, user_id, content) VALUES (:post_id, :user_id, :content)";
-$stmt = $db->prepare($query);
-$stmt->bindParam(":post_id", $post_id);
-$stmt->bindParam(":user_id", $user_id);
-$stmt->bindParam(":content", $content);
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_comment'])) {
+    if (isset($_SESSION['user_id'])) {
+        $comment->post_id = $_POST['post_id'];
+        $comment->user_id = $_SESSION['user_id'];
+        $comment->content = $_POST['content'];
 
-if ($stmt->execute()) {
-    header("Location: ../views/post.php?id=" . $post_id);
-} else {
-    echo "Erreur lors de l'ajout du commentaire.";
+        if ($comment->addComment()) {
+            header("Location: ../views/post.php?id=" . $comment->post_id);
+            exit;
+        } else {
+            echo "Erreur lors de l'ajout du commentaire.";
+        }
+    }
 }
 ?>

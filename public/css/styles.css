@@ -1,32 +1,33 @@
 body {
     font-family: Arial, sans-serif;
-    margin: 20px;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+    text-align: center;
 }
 
-h1, h2, h3 {
+h1 {
     color: #333;
 }
 
-button {
-    background-color: red;
+a {
+    text-decoration: none;
     color: white;
-    border: none;
-    padding: 8px 12px;
-    cursor: pointer;
+    background: #007BFF;
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin: 5px;
+    display: inline-block;
 }
 
-button:hover {
-    background-color: darkred;
+a:hover {
+    background: #0056b3;
 }
 
-.comment {
-    border-left: 4px solid #007BFF;
-    padding: 10px;
-    margin-bottom: 10px;
-    background: #f9f9f9;
+.logout-btn {
+    background: red;
 }
 
-.date {
-    font-size: 0.9em;
-    color: gray;
+.logout-btn:hover {
+    background: darkred;
 }
